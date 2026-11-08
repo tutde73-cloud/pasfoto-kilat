@@ -49,9 +49,15 @@
         <!-- Preview & Editor Section -->
         <section id="editor-section" class="bg-[#1e1e1e] p-5 rounded-2xl border border-gray-800 shadow-xl flex flex-col gap-5 hidden">
             
-            <!-- Canvas Preview Container -->
-            <div class="flex flex-col items-center justify-center bg-[#171717] p-4 rounded-xl border border-gray-800">
-                <canvas id="photo-canvas" class="max-w-full rounded shadow-md border border-gray-700" style="max-height: 360px; aspect-ratio: 3/4;"></canvas>
+            <!-- Canvas Proses (Disembunyikan karena kita tampilkan hasil preview gambarnya langsung) -->
+            <canvas id="photo-canvas" class="hidden"></canvas>
+
+            <!-- Preview Hasil Jadi (Image Tag) -->
+            <div class="flex flex-col items-center gap-2">
+                <label class="block text-xs font-semibold uppercase text-gray-400 tracking-wider w-full text-left">Pratinjau Hasil Akhir</label>
+                <div class="bg-[#171717] p-3 rounded-xl border border-gray-800 w-full flex justify-center">
+                    <img id="result-preview" class="max-h-[320px] rounded shadow-md border border-gray-700 object-contain" alt="Preview Pas Foto">
+                </div>
             </div>
 
             <!-- Controls: Warna Formal -->
@@ -100,6 +106,7 @@
         const editorSection = document.getElementById('editor-section');
         const canvas = document.getElementById('photo-canvas');
         const ctx = canvas.getContext('2d');
+        const resultPreview = document.getElementById('result-preview');
 
         let userImage = null;
         let currentBgColor = '#FF0000'; // Default Merah
@@ -121,7 +128,7 @@
                 img.onload = function() {
                     userImage = img;
                     editorSection.classList.remove('hidden');
-                    renderCanvas();
+                    renderCanvasAndPreview();
                 }
                 img.src = event.target.result;
             }
@@ -130,17 +137,17 @@
 
         function setBackground(color) {
             currentBgColor = color;
-            renderCanvas();
+            renderCanvasAndPreview();
         }
 
-        function renderCanvas() {
+        function renderCanvasAndPreview() {
             if (!userImage) return;
 
-            // 1. Isi Warna Latar Belakang
+            // 1. Gambar latar belakang pada canvas
             ctx.fillStyle = currentBgColor;
             ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-            // 2. Gambar Foto secara Proporsional (Rata tengah bawah)
+            // 2. Gambar foto secara proporsional
             const scale = Math.min(CANVAS_WIDTH / userImage.width, CANVAS_HEIGHT / userImage.height);
             const w = userImage.width * scale;
             const h = userImage.height * scale;
@@ -148,10 +155,14 @@
             const y = CANVAS_HEIGHT - h;
 
             ctx.drawImage(userImage, x, y, w, h);
+
+            // 3. Tampilkan hasil canvas langsung ke elemen tag <img> (Preview)
+            resultPreview.src = canvas.toDataURL('image/jpeg', 0.92);
         }
 
         function downloadImage(mode) {
             let quality = 0.92;
+            
             if (mode === 'target200kb') {
                 let dataUrl = canvas.toDataURL('image/jpeg', quality);
                 let sizeInBytes = Math.round((dataUrl.length - 'data:image/jpeg;base64,'.length) * 3 / 4);
@@ -161,20 +172,34 @@
                     dataUrl = canvas.toDataURL('image/jpeg', quality);
                     sizeInBytes = Math.round((dataUrl.length - 'data:image/jpeg;base64,'.length) * 3 / 4);
                 }
-                triggerDownload(dataUrl, 'PasFoto_200KB_PasFotoKilat.jpg');
+                canvasToBlobAndDownload(dataUrl, 'PasFoto_200KB_PasFotoKilat.jpg');
             } else {
                 const dataUrl = canvas.toDataURL('image/jpeg', quality);
-                triggerDownload(dataUrl, 'PasFoto_HD_PasFotoKilat.jpg');
+                canvasToBlobAndDownload(dataUrl, 'PasFoto_HD_PasFotoKilat.jpg');
             }
         }
 
-        function triggerDownload(dataUrl, filename) {
+        function canvasToBlobAndDownload(dataUrl, filename) {
+            const arr = dataUrl.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            const blob = new Blob([u8arr], { type: mime });
+            
+            const blobUrl = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = dataUrl;
+            a.href = blobUrl;
             a.download = filename;
+            
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+            
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
         }
     </script>
 </body>

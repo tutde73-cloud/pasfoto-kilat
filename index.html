@@ -3,21 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PasFotoKilat - AI Hapus Latar Belakang</title>
+    <title>PasFotoKilat - Pas Foto Instan</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Library AI Hapus Background Browser-based (IMG.LY) -->
-    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/index.js"></script>
     <!-- Font Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #121212; color: #E0E0E0; }
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            width: 44px; height: 44px; border-radius: 50%;
-            border-left-color: #6366F1; animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
@@ -29,14 +21,14 @@
                 <div class="bg-indigo-600 text-white font-bold px-2.5 py-1 rounded-lg text-lg">⚡</div>
                 <h1 class="text-xl font-bold tracking-tight text-white">PasFoto<span class="text-indigo-400">Kilat</span></h1>
             </div>
-            <span class="text-xs bg-indigo-950 text-indigo-300 font-medium px-2.5 py-1 rounded-full border border-indigo-800/50">AI 100% Client-Side</span>
+            <span class="text-xs bg-indigo-950 text-indigo-300 font-medium px-2.5 py-1 rounded-full border border-indigo-800/50">100% Client-Side</span>
         </div>
     </header>
 
     <!-- Main Content -->
     <main class="max-w-md mx-auto w-full px-4 py-6 flex-grow flex flex-col gap-6">
 
-        <!-- Upload Box & Loading AI -->
+        <!-- Upload Box -->
         <section class="bg-[#1e1e1e] p-5 rounded-2xl border border-gray-800 text-center shadow-xl">
             <div id="upload-box" class="border-2 border-dashed border-gray-700 hover:border-indigo-500 transition-colors rounded-xl p-6 cursor-pointer bg-[#171717]">
                 <input type="file" id="image-input" accept="image/*" class="hidden">
@@ -45,15 +37,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                     <p class="font-semibold text-white">Pilih Foto Kamu</p>
-                    <p class="text-xs text-gray-400">AI otomatis hapus latar belakang di perangkat</p>
+                    <p class="text-xs text-gray-400">Ketuk di sini untuk mengganti atau memilih foto</p>
                 </div>
-            </div>
-
-            <!-- Loading Indicator AI -->
-            <div id="loading-state" class="hidden flex flex-col items-center justify-center py-6 gap-3">
-                <div class="spinner"></div>
-                <p id="loading-text" class="text-sm font-medium text-indigo-400 animate-pulse">Memuat Model AI & Menghapus Latar...</p>
-                <p class="text-xs text-gray-500">Proses pertama kali butuh beberapa detik</p>
             </div>
         </section>
 
@@ -64,7 +49,7 @@
 
             <!-- Preview Hasil -->
             <div class="flex flex-col items-center gap-2">
-                <label class="block text-xs font-semibold uppercase text-indigo-400 tracking-wider w-full text-left">📸 Pratinjau Hasil Tanpa Background</label>
+                <label class="block text-xs font-semibold uppercase text-indigo-400 tracking-wider w-full text-left">📸 Pratinjau Hasil Akhir</label>
                 <div class="bg-[#171717] p-3 rounded-xl border border-gray-700 w-full flex justify-center">
                     <img id="result-preview" class="max-h-[340px] w-auto rounded shadow-md border border-gray-600 object-contain aspect-[3/4]" alt="Preview Hasil">
                 </div>
@@ -74,21 +59,21 @@
             <div>
                 <label class="block text-xs font-semibold uppercase text-gray-400 tracking-wider mb-2">Pilih Warna Latar Belakang</label>
                 <div class="grid grid-cols-4 gap-2">
-                    <button onclick="setBackground('#FF0000')" class="h-10 rounded-lg font-medium text-xs bg-red-600 text-white border border-red-500 hover:opacity-90 active:scale-95 transition">Merah</button>
-                    <button onclick="setBackground('#0000FF')" class="h-10 rounded-lg font-medium text-xs bg-blue-600 text-white border border-blue-500 hover:opacity-90 active:scale-95 transition">Biru</button>
-                    <button onclick="setBackground('#FFFFFF')" class="h-10 rounded-lg font-medium text-xs bg-white text-gray-900 border border-gray-300 hover:opacity-90 active:scale-95 transition">Putih</button>
-                    <button onclick="setBackground('#E0E0E0')" class="h-10 rounded-lg font-medium text-xs bg-gray-300 text-gray-900 border border-gray-400 hover:opacity-90 active:scale-95 transition">Abu-abu</button>
+                    <button type="button" onclick="changeBackground('#FF0000')" class="h-10 rounded-lg font-medium text-xs bg-red-600 text-white border border-red-500 hover:opacity-90 active:scale-95 transition">Merah</button>
+                    <button type="button" onclick="changeBackground('#0000FF')" class="h-10 rounded-lg font-medium text-xs bg-blue-600 text-white border border-blue-500 hover:opacity-90 active:scale-95 transition">Biru</button>
+                    <button type="button" onclick="changeBackground('#FFFFFF')" class="h-10 rounded-lg font-medium text-xs bg-white text-gray-900 border border-gray-300 hover:opacity-90 active:scale-95 transition">Putih</button>
+                    <button type="button" onclick="changeBackground('#E0E0E0')" class="h-10 rounded-lg font-medium text-xs bg-gray-300 text-gray-900 border border-gray-400 hover:opacity-90 active:scale-95 transition">Abu-abu</button>
                 </div>
             </div>
 
             <!-- Download Button -->
             <div class="pt-2 border-t border-gray-800 flex flex-col gap-2">
-                <label class="block text-xs font-semibold uppercase text-gray-400 tracking-wider">Unduh Foto</label>
-                <button onclick="downloadImage('standard')" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-indigo-900/30 active:scale-[0.98]">
-                    Unduh Kualitas HD
+                <label class="block text-xs font-semibold uppercase text-gray-400 tracking-wider">Opsi Unduh Foto</label>
+                <button type="button" onclick="downloadImage('standard')" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-indigo-900/30 active:scale-[0.98]">
+                    Unduh Kualitas Standar (HD)
                 </button>
-                <button onclick="downloadImage('target200kb')" class="w-full py-3 bg-gray-800 hover:bg-gray-700 text-indigo-300 font-semibold rounded-xl text-sm border border-indigo-900/50 transition active:scale-[0.98]">
-                    Unduh Pas ≤ 200 KB (CPNS/Kuliah)
+                <button type="button" onclick="downloadImage('target200kb')" class="w-full py-3 bg-gray-800 hover:bg-gray-700 text-indigo-300 font-semibold rounded-xl text-sm border border-indigo-900/50 transition active:scale-[0.98]">
+                    Unduh Pas ≤ 200 KB (Syarat CPNS/Kuliah)
                 </button>
             </div>
         </section>
@@ -105,21 +90,19 @@
     </main>
 
     <footer class="py-4 text-center text-xs text-gray-600 border-t border-gray-800">
-        &copy; 2026 PasFotoKilat. AI diproses langsung di perangkat.
+        &copy; 2026 PasFotoKilat. Aman & Cepat di Perangkat Pengguna.
     </footer>
 
     <script>
         const imageInput = document.getElementById('image-input');
         const uploadBox = document.getElementById('upload-box');
-        const loadingState = document.getElementById('loading-state');
-        const loadingText = document.getElementById('loading-text');
         const editorSection = document.getElementById('editor-section');
         const canvas = document.getElementById('photo-canvas');
         const ctx = canvas.getContext('2d');
         const resultPreview = document.getElementById('result-preview');
 
-        let foregroundImg = null;
-        let currentBgColor = '#FF0000'; // Default Merah
+        let userImage = null;
+        let activeBgColor = '#FF0000'; // Default Merah
 
         const CANVAS_WIDTH = 600;
         const CANVAS_HEIGHT = 800;
@@ -128,65 +111,54 @@
 
         uploadBox.addEventListener('click', () => imageInput.click());
 
-        imageInput.addEventListener('change', async (e) => {
+        imageInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            uploadBox.classList.add('hidden');
-            loadingState.classList.remove('hidden');
-            loadingText.innerText = "AI Sedang Menghapus Background...";
-
-            try {
-                // Memanggil Mesin AI imgly untuk hapus background langsung di browser
-                const blob = await imglyRemoveBackground(file);
-                const url = URL.createObjectURL(blob);
-
+            const reader = new FileReader();
+            reader.onload = function(event) {
                 const img = new Image();
-                img.onload = () => {
-                    foregroundImg = img;
-                    loadingState.classList.add('hidden');
-                    uploadBox.classList.remove('hidden');
+                img.onload = function() {
+                    userImage = img;
                     editorSection.classList.remove('hidden');
-                    renderCanvas();
-                };
-                img.src = url;
-            } catch (err) {
-                console.error(err);
-                alert('Gagal memproses AI pada foto ini. Coba gunakan foto lain.');
-                loadingState.classList.add('hidden');
-                uploadBox.classList.remove('hidden');
+                    updateCanvasAndPreview();
+                }
+                img.src = event.target.result;
             }
+            reader.readAsDataURL(file);
         });
 
-        function setBackground(color) {
-            currentBgColor = color;
-            renderCanvas();
+        // Fungsi khusus mengubah warna background saat tombol diklik
+        function changeBackground(colorHex) {
+            activeBgColor = colorHex;
+            if (userImage) {
+                updateCanvasAndPreview();
+            }
         }
 
-        function renderCanvas() {
-            if (!foregroundImg) return;
+        function updateCanvasAndPreview() {
+            if (!userImage) return;
 
-            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-            // 1. Gambar Background Warna Pilihan
-            ctx.fillStyle = currentBgColor;
+            // 1. Timpa canvas dengan warna latar belakang aktif
+            ctx.fillStyle = activeBgColor;
             ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-            // 2. Gambar Subjek Manusia yang sudah transparan (hasil AI) secara proporsional
-            const scale = Math.min(CANVAS_WIDTH / foregroundImg.width, CANVAS_HEIGHT / foregroundImg.height);
-            const w = foregroundImg.width * scale;
-            const h = foregroundImg.height * scale;
+            // 2. Gambar foto secara proporsional di atasnya
+            const scale = Math.min(CANVAS_WIDTH / userImage.width, CANVAS_HEIGHT / userImage.height);
+            const w = userImage.width * scale;
+            const h = userImage.height * scale;
             const x = (CANVAS_WIDTH / 2) - (w / 2);
             const y = CANVAS_HEIGHT - h;
 
-            ctx.drawImage(foregroundImg, x, y, w, h);
+            ctx.drawImage(userImage, x, y, w, h);
 
-            // 3. Tampilkan ke Preview
+            // 3. Perbarui pratinjau gambar secara instan
             resultPreview.src = canvas.toDataURL('image/jpeg', 0.92);
         }
 
         function downloadImage(mode) {
             let quality = 0.92;
+            
             if (mode === 'target200kb') {
                 let dataUrl = canvas.toDataURL('image/jpeg', quality);
                 let sizeInBytes = Math.round((dataUrl.length - 'data:image/jpeg;base64,'.length) * 3 / 4);
@@ -209,16 +181,20 @@
             const bstr = atob(arr[1]);
             let n = bstr.length;
             const u8arr = new Uint8Array(n);
-            while (n--) { u8arr[n] = bstr.charCodeAt(n); }
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
             const blob = new Blob([u8arr], { type: mime });
             
             const blobUrl = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = blobUrl;
             a.download = filename;
+            
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+            
             setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
         }
     </script>

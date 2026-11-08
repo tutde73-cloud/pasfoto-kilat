@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PasFotoKilat - Pas Foto Instan & Estetik Client-Side</title>
+    <title>PasFotoKilat - Pas Foto Instan & Estetik</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- @imgly/background-removal CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/index.js"></script>
     <!-- Font Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -15,19 +13,6 @@
             font-family: 'Inter', sans-serif;
             background-color: #121212;
             color: #E0E0E0;
-        }
-        /* Custom Loader Spinner */
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            border-left-color: #6366F1;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -40,14 +25,14 @@
                 <div class="bg-indigo-600 text-white font-bold px-2.5 py-1 rounded-lg text-lg">⚡</div>
                 <h1 class="text-xl font-bold tracking-tight text-white">PasFoto<span class="text-indigo-400">Kilat</span></h1>
             </div>
-            <span class="text-xs bg-indigo-950 text-indigo-300 font-medium px-2.5 py-1 rounded-full border border-indigo-800/50">100% Gratis & Privasi</span>
+            <span class="text-xs bg-indigo-950 text-indigo-300 font-medium px-2.5 py-1 rounded-full border border-indigo-800/50">100% Cepat & Stabil</span>
         </div>
     </header>
 
     <!-- Main Content Container -->
     <main class="max-w-md mx-auto w-full px-4 py-6 flex-grow flex flex-col gap-6">
 
-        <!-- Info / Upload Section -->
+        <!-- Upload Section -->
         <section class="bg-[#1e1e1e] p-5 rounded-2xl border border-gray-800 text-center shadow-xl">
             <div id="upload-box" class="border-2 border-dashed border-gray-700 hover:border-indigo-500 transition-colors rounded-xl p-6 cursor-pointer bg-[#171717] relative">
                 <input type="file" id="image-input" accept="image/*" class="hidden">
@@ -56,15 +41,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                     <p class="font-semibold text-white">Pilih Foto Kamu</p>
-                    <p class="text-xs text-gray-400">Format PNG/JPG (Otomatis hapus background oleh AI)</p>
+                    <p class="text-xs text-gray-400">Format PNG/JPG (Langsung tampil & sesuaikan warna)</p>
                 </div>
-            </div>
-
-            <!-- Loading Indicator -->
-            <div id="loading-state" class="hidden flex flex-col items-center justify-center py-8 gap-3">
-                <div class="spinner"></div>
-                <p class="text-sm font-medium text-indigo-400 animate-pulse">Sedang Memproses Foto dengan AI...</p>
-                <p class="text-xs text-gray-500">Proses dilakukan penuh di HP/Perangkat kamu</p>
             </div>
         </section>
 
@@ -78,28 +56,12 @@
 
             <!-- Controls: Warna Formal -->
             <div>
-                <label class="block text-xs font-semibold uppercase text-gray-400 tracking-wider mb-2">Latar Belakang Formal</label>
+                <label class="block text-xs font-semibold uppercase text-gray-400 tracking-wider mb-2">Pilih Warna Latar Belakang</label>
                 <div class="grid grid-cols-4 gap-2">
-                    <button onclick="setBackground('color', '#FF0000')" class="h-10 rounded-lg font-medium text-xs bg-red-600 text-white border border-red-500 hover:opacity-90 active:scale-95 transition">Merah</button>
-                    <button onclick="setBackground('color', '#0000FF')" class="h-10 rounded-lg font-medium text-xs bg-blue-600 text-white border border-blue-500 hover:opacity-90 active:scale-95 transition">Biru</button>
-                    <button onclick="setBackground('color', '#FFFFFF')" class="h-10 rounded-lg font-medium text-xs bg-white text-gray-900 border border-gray-300 hover:opacity-90 active:scale-95 transition">Putih</button>
-                    <button onclick="setBackground('color', '#E0E0E0')" class="h-10 rounded-lg font-medium text-xs bg-gray-300 text-gray-900 border border-gray-400 hover:opacity-90 active:scale-95 transition">Abu-abu</button>
-                </div>
-            </div>
-
-            <!-- Controls: Background Gambar Estetik -->
-            <div>
-                <label class="block text-xs font-semibold uppercase text-gray-400 tracking-wider mb-2">Latar Gambar Premium</label>
-                <div class="grid grid-cols-3 gap-2">
-                    <button onclick="setBackground('image', 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=600')" class="p-2 border border-gray-700 hover:border-indigo-500 rounded-lg bg-[#171717] flex flex-col items-center gap-1 group transition">
-                        <span class="text-xs text-gray-300 group-hover:text-white">Studio</span>
-                    </button>
-                    <button onclick="setBackground('image', 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=600')" class="p-2 border border-gray-700 hover:border-indigo-500 rounded-lg bg-[#171717] flex flex-col items-center gap-1 group transition">
-                        <span class="text-xs text-gray-300 group-hover:text-white">Kantor Blur</span>
-                    </button>
-                    <button onclick="setBackground('image', 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=600')" class="p-2 border border-gray-700 hover:border-indigo-500 rounded-lg bg-[#171717] flex flex-col items-center gap-1 group transition">
-                        <span class="text-xs text-gray-300 group-hover:text-white">Pastel</span>
-                    </button>
+                    <button onclick="setBackground('#FF0000')" class="h-10 rounded-lg font-medium text-xs bg-red-600 text-white border border-red-500 hover:opacity-90 active:scale-95 transition">Merah</button>
+                    <button onclick="setBackground('#0000FF')" class="h-10 rounded-lg font-medium text-xs bg-blue-600 text-white border border-blue-500 hover:opacity-90 active:scale-95 transition">Biru</button>
+                    <button onclick="setBackground('#FFFFFF')" class="h-10 rounded-lg font-medium text-xs bg-white text-gray-900 border border-gray-300 hover:opacity-90 active:scale-95 transition">Putih</button>
+                    <button onclick="setBackground('#E0E0E0')" class="h-10 rounded-lg font-medium text-xs bg-gray-300 text-gray-900 border border-gray-400 hover:opacity-90 active:scale-95 transition">Abu-abu</button>
                 </div>
             </div>
 
@@ -115,11 +77,11 @@
             </div>
         </section>
 
-        <!-- Donation / Support Placeholder -->
+        <!-- Donation Placeholder -->
         <section class="bg-[#1e1e1e] p-4 rounded-xl border border-gray-800/80 text-center flex flex-col gap-2">
             <p class="text-xs text-gray-400">Website ini gratis & tanpa iklan mengganggu!</p>
             <div class="flex justify-center items-center gap-2">
-                <a href="https://trakteer.id" target="_blank" rel="noopener" class="text-xs text-indigo-400 hover:underline font-medium">Bantu Traktir Kopi via Trakteer ☕</a>
+                <a href="https://trakteer.id" target="_blank" rel="noopener" class="text-xs text-indigo-400 hover:underline font-medium">Trakteer ☕</a>
                 <span class="text-gray-600">•</span>
                 <a href="https://saweria.co" target="_blank" rel="noopener" class="text-xs text-amber-400 hover:underline font-medium">Saweria 💛</a>
             </div>
@@ -128,114 +90,69 @@
 
     <!-- Footer -->
     <footer class="py-4 text-center text-xs text-gray-600 border-t border-gray-800">
-        &copy; 2026 PasFotoKilat. Pemrosesan foto 100% aman di perangkat pengguna.
+        &copy; 2026 PasFotoKilat. Aman & Cepat di Perangkat Pengguna.
     </footer>
 
     <!-- Logic Script -->
     <script>
         const imageInput = document.getElementById('image-input');
         const uploadBox = document.getElementById('upload-box');
-        const loadingState = document.getElementById('loading-state');
         const editorSection = document.getElementById('editor-section');
         const canvas = document.getElementById('photo-canvas');
         const ctx = canvas.getContext('2d');
 
-        let foregroundImage = null;
-        let currentBgType = 'color'; // 'color' atau 'image'
-        let currentBgValue = '#FF0000'; // Default Merah
+        let userImage = null;
+        let currentBgColor = '#FF0000'; // Default Merah
 
-        // Target Rasio Pas Foto: 3:4 (Standar 300x400px Canvas)
         const CANVAS_WIDTH = 600;
         const CANVAS_HEIGHT = 800;
         canvas.width = CANVAS_WIDTH;
         canvas.height = CANVAS_HEIGHT;
 
-        // Handle Click Upload
         uploadBox.addEventListener('click', () => imageInput.click());
 
-        // Handle File Selection
-        imageInput.addEventListener('change', async (e) => {
+        imageInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // UI Feedback
-            uploadBox.classList.add('hidden');
-            loadingState.classList.remove('hidden');
-
-            try {
-                // Proses Hapus Background via @imgly/background-removal (100% Client-Side)
-                const imageBlob = await imglyRemoveBackground(file);
-                const url = URL.createObjectURL(imageBlob);
-                
+            const reader = new FileReader();
+            reader.onload = function(event) {
                 const img = new Image();
-                img.onload = () => {
-                    foregroundImage = img;
-                    loadingState.classList.add('hidden');
-                    uploadBox.classList.remove('hidden');
+                img.onload = function() {
+                    userImage = img;
                     editorSection.classList.remove('hidden');
                     renderCanvas();
-                };
-                img.src = url;
-            } catch (error) {
-                alert('Gagal memproses foto. Silakan coba gunakan foto lain.');
-                console.error(error);
-                loadingState.classList.add('hidden');
-                uploadBox.classList.remove('hidden');
+                }
+                img.src = event.target.result;
             }
+            reader.readAsDataURL(file);
         });
 
-        // Set Background Config
-        function setBackground(type, value) {
-            currentBgType = type;
-            currentBgValue = value;
+        function setBackground(color) {
+            currentBgColor = color;
             renderCanvas();
         }
 
-        // Render Canvas (Proposional tanpa distorsi gepeng)
         function renderCanvas() {
-            if (!foregroundImage) return;
+            if (!userImage) return;
 
-            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            // 1. Isi Warna Latar Belakang
+            ctx.fillStyle = currentBgColor;
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-            // 1. Gambar Background
-            if (currentBgType === 'color') {
-                ctx.fillStyle = currentBgValue;
-                ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-                drawForeground();
-            } else if (currentBgType === 'image') {
-                const bgImg = new Image();
-                bgImg.crossOrigin = 'anonymous';
-                bgImg.onload = () => {
-                    // Draw Cover Background Image
-                    const scale = Math.max(CANVAS_WIDTH / bgImg.width, CANVAS_HEIGHT / bgImg.height);
-                    const x = (CANVAS_WIDTH / 2) - (bgImg.width / 2) * scale;
-                    const y = (CANVAS_HEIGHT / 2) - (bgImg.height / 2) * scale;
-                    ctx.drawImage(bgImg, x, y, bgImg.width * scale, bgImg.height * scale);
-                    drawForeground();
-                };
-                bgImg.src = currentBgValue;
-            }
-        }
-
-        // Draw Subjek Manusia (Fit Proposional)
-        function drawForeground() {
-            const scale = Math.min(CANVAS_WIDTH / foregroundImage.width, CANVAS_HEIGHT / foregroundImage.height);
-            const w = foregroundImage.width * scale;
-            const h = foregroundImage.height * scale;
-            
-            // Posisikan subjek rata bawah agar pas foto tampak alami
+            // 2. Gambar Foto secara Proporsional (Rata tengah bawah)
+            const scale = Math.min(CANVAS_WIDTH / userImage.width, CANVAS_HEIGHT / userImage.height);
+            const w = userImage.width * scale;
+            const h = userImage.height * scale;
             const x = (CANVAS_WIDTH / 2) - (w / 2);
             const y = CANVAS_HEIGHT - h;
 
-            ctx.drawImage(foregroundImage, x, y, w, h);
+            ctx.drawImage(userImage, x, y, w, h);
         }
 
-        // Fungsi Unduh Gambar (Termasuk Algoritma Kompresi Kompatibilitas Instansi)
         function downloadImage(mode) {
-            let quality = 0.92; // Default High Quality
-            
+            let quality = 0.92;
             if (mode === 'target200kb') {
-                // Iterasi kompresi otomatis untuk menargetkan ukuran file sekitar 150KB - 190KB
                 let dataUrl = canvas.toDataURL('image/jpeg', quality);
                 let sizeInBytes = Math.round((dataUrl.length - 'data:image/jpeg;base64,'.length) * 3 / 4);
 
@@ -244,7 +161,6 @@
                     dataUrl = canvas.toDataURL('image/jpeg', quality);
                     sizeInBytes = Math.round((dataUrl.length - 'data:image/jpeg;base64,'.length) * 3 / 4);
                 }
-
                 triggerDownload(dataUrl, 'PasFoto_200KB_PasFotoKilat.jpg');
             } else {
                 const dataUrl = canvas.toDataURL('image/jpeg', quality);
@@ -252,7 +168,6 @@
             }
         }
 
-        // Helper Trigger Download
         function triggerDownload(dataUrl, filename) {
             const a = document.createElement('a');
             a.href = dataUrl;

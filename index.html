@@ -69,10 +69,10 @@
 
             <!-- Download Buttons -->
             <div class="flex flex-col gap-2 pt-2">
-                <a id="download-no-wm" target="_blank" class="w-full py-3 text-center bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl text-sm transition shadow-md active:scale-[0.98]">
+                <a id="download-no-wm" target="_blank" rel="noopener" class="w-full py-3 text-center bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl text-sm transition shadow-md active:scale-[0.98]">
                     ⬇️ Unduh Video (No Watermark)
                 </a>
-                <a id="download-music" target="_blank" class="w-full py-3 text-center bg-gray-800 hover:bg-gray-700 text-cyan-300 font-semibold rounded-xl text-sm border border-gray-700 transition active:scale-[0.98]">
+                <a id="download-music" target="_blank" rel="noopener" class="w-full py-3 text-center bg-gray-800 hover:bg-gray-700 text-cyan-300 font-semibold rounded-xl text-sm border border-gray-700 transition active:scale-[0.98]">
                     🎵 Unduh Audio / MP3 Saja
                 </a>
             </div>
@@ -120,7 +120,6 @@
                 loadingState.classList.remove('hidden');
 
                 try {
-                    // Menggunakan API publik TikWM untuk mengambil file tanpa watermark
                     const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`;
                     const response = await fetch(apiUrl);
                     const data = await response.json();
@@ -134,7 +133,7 @@
                         authorNickname.innerText = videoData.author.nickname || 'TikTok User';
                         videoTitle.innerText = videoData.title || 'Video TikTok';
                         
-                        videoPlayer.src = videoData.play; // Direct Link Video No Watermark
+                        videoPlayer.src = videoData.play;
                         downloadNoWm.href = videoData.play;
                         downloadMusic.href = videoData.music;
 

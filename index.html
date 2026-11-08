@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PasFotoKilat - AI Pas Foto Instan</title>
+    <title>PasFotoKilat - AI Hapus Latar Belakang</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google MediaPipe Selfie Segmentation CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
+    <!-- Library AI Hapus Background Browser-based (IMG.LY) -->
+    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/index.js"></script>
     <!-- Font Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #121212; color: #E0E0E0; }
         .spinner {
             border: 4px solid rgba(255, 255, 255, 0.1);
-            width: 40px; height: 40px; border-radius: 50%;
+            width: 44px; height: 44px; border-radius: 50%;
             border-left-color: #6366F1; animation: spin 0.8s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -30,14 +29,14 @@
                 <div class="bg-indigo-600 text-white font-bold px-2.5 py-1 rounded-lg text-lg">⚡</div>
                 <h1 class="text-xl font-bold tracking-tight text-white">PasFoto<span class="text-indigo-400">Kilat</span></h1>
             </div>
-            <span class="text-xs bg-indigo-950 text-indigo-300 font-medium px-2.5 py-1 rounded-full border border-indigo-800/50">AI Client-Side</span>
+            <span class="text-xs bg-indigo-950 text-indigo-300 font-medium px-2.5 py-1 rounded-full border border-indigo-800/50">AI 100% Client-Side</span>
         </div>
     </header>
 
     <!-- Main Content -->
     <main class="max-w-md mx-auto w-full px-4 py-6 flex-grow flex flex-col gap-6">
 
-        <!-- Upload Box -->
+        <!-- Upload Box & Loading AI -->
         <section class="bg-[#1e1e1e] p-5 rounded-2xl border border-gray-800 text-center shadow-xl">
             <div id="upload-box" class="border-2 border-dashed border-gray-700 hover:border-indigo-500 transition-colors rounded-xl p-6 cursor-pointer bg-[#171717]">
                 <input type="file" id="image-input" accept="image/*" class="hidden">
@@ -46,14 +45,15 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                     <p class="font-semibold text-white">Pilih Foto Kamu</p>
-                    <p class="text-xs text-gray-400">AI Google akan menghapus background secara otomatis</p>
+                    <p class="text-xs text-gray-400">AI otomatis hapus latar belakang di perangkat</p>
                 </div>
             </div>
 
-            <!-- Loading Indicator -->
+            <!-- Loading Indicator AI -->
             <div id="loading-state" class="hidden flex flex-col items-center justify-center py-6 gap-3">
                 <div class="spinner"></div>
-                <p class="text-sm font-medium text-indigo-400 animate-pulse">AI Google Sedang Memotong Latar...</p>
+                <p id="loading-text" class="text-sm font-medium text-indigo-400 animate-pulse">Memuat Model AI & Menghapus Latar...</p>
+                <p class="text-xs text-gray-500">Proses pertama kali butuh beberapa detik</p>
             </div>
         </section>
 
@@ -64,7 +64,7 @@
 
             <!-- Preview Hasil -->
             <div class="flex flex-col items-center gap-2">
-                <label class="block text-xs font-semibold uppercase text-indigo-400 tracking-wider w-full text-left">📸 Pratinjau Hasil Pas Foto</label>
+                <label class="block text-xs font-semibold uppercase text-indigo-400 tracking-wider w-full text-left">📸 Pratinjau Hasil Tanpa Background</label>
                 <div class="bg-[#171717] p-3 rounded-xl border border-gray-700 w-full flex justify-center">
                     <img id="result-preview" class="max-h-[340px] w-auto rounded shadow-md border border-gray-600 object-contain aspect-[3/4]" alt="Preview Hasil">
                 </div>
@@ -105,94 +105,83 @@
     </main>
 
     <footer class="py-4 text-center text-xs text-gray-600 border-t border-gray-800">
-        &copy; 2026 PasFotoKilat. Pemrosesan AI 100% di perangkat.
+        &copy; 2026 PasFotoKilat. AI diproses langsung di perangkat.
     </footer>
 
     <script>
         const imageInput = document.getElementById('image-input');
         const uploadBox = document.getElementById('upload-box');
         const loadingState = document.getElementById('loading-state');
+        const loadingText = document.getElementById('loading-text');
         const editorSection = document.getElementById('editor-section');
         const canvas = document.getElementById('photo-canvas');
         const ctx = canvas.getContext('2d');
         const resultPreview = document.getElementById('result-preview');
 
-        let rawImage = null;
-        let segmentationMask = null;
-        let currentBgColor = '#FF0000';
+        let foregroundImg = null;
+        let currentBgColor = '#FF0000'; // Default Merah
 
         const CANVAS_WIDTH = 600;
         const CANVAS_HEIGHT = 800;
         canvas.width = CANVAS_WIDTH;
         canvas.height = CANVAS_HEIGHT;
 
-        // Inisialisasi Google MediaPipe Selfie Segmentation AI
-        const selfieSegmentation = new SelfieSegmentation({
-            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
-        });
-
-        selfieSegmentation.setOptions({ modelSelection: 1 }); // Model General (Akurat & Ringan)
-
-        selfieSegmentation.onResults((results) => {
-            segmentationMask = results.segmentationMask;
-            loadingState.classList.add('hidden');
-            uploadBox.classList.remove('hidden');
-            editorSection.classList.remove('hidden');
-            renderPasFoto();
-        });
-
         uploadBox.addEventListener('click', () => imageInput.click());
 
-        imageInput.addEventListener('change', (e) => {
+        imageInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
             uploadBox.classList.add('hidden');
             loadingState.classList.remove('hidden');
+            loadingText.innerText = "AI Sedang Menghapus Background...";
 
-            const reader = new FileReader();
-            reader.onload = function(event) {
+            try {
+                // Memanggil Mesin AI imgly untuk hapus background langsung di browser
+                const blob = await imglyRemoveBackground(file);
+                const url = URL.createObjectURL(blob);
+
                 const img = new Image();
-                img.onload = async function() {
-                    rawImage = img;
-                    // Kirim gambar ke AI Google untuk diproses
-                    await selfieSegmentation.send({ image: rawImage });
+                img.onload = () => {
+                    foregroundImg = img;
+                    loadingState.classList.add('hidden');
+                    uploadBox.classList.remove('hidden');
+                    editorSection.classList.remove('hidden');
+                    renderCanvas();
                 };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
+                img.src = url;
+            } catch (err) {
+                console.error(err);
+                alert('Gagal memproses AI pada foto ini. Coba gunakan foto lain.');
+                loadingState.classList.add('hidden');
+                uploadBox.classList.remove('hidden');
+            }
         });
 
         function setBackground(color) {
             currentBgColor = color;
-            renderPasFoto();
+            renderCanvas();
         }
 
-        function renderPasFoto() {
-            if (!rawImage || !segmentationMask) return;
+        function renderCanvas() {
+            if (!foregroundImg) return;
 
-            ctx.save();
             ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-            // 1. Gambar Latar Warna Pilihan
+            // 1. Gambar Background Warna Pilihan
             ctx.fillStyle = currentBgColor;
             ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-            // Hitung Skala & Posisi Subjek Manusia agar 3:4 Proposional
-            const scale = Math.min(CANVAS_WIDTH / rawImage.width, CANVAS_HEIGHT / rawImage.height);
-            const w = rawImage.width * scale;
-            const h = rawImage.height * scale;
+            // 2. Gambar Subjek Manusia yang sudah transparan (hasil AI) secara proporsional
+            const scale = Math.min(CANVAS_WIDTH / foregroundImg.width, CANVAS_HEIGHT / foregroundImg.height);
+            const w = foregroundImg.width * scale;
+            const h = foregroundImg.height * scale;
             const x = (CANVAS_WIDTH / 2) - (w / 2);
             const y = CANVAS_HEIGHT - h;
 
-            // 2. Terapkan Masking AI (Hapus Background)
-            ctx.drawImage(segmentationMask, x, y, w, h);
-            ctx.globalCompositeOperation = 'source-in';
-            ctx.drawImage(rawImage, x, y, w, h);
+            ctx.drawImage(foregroundImg, x, y, w, h);
 
-            ctx.restore();
-
-            // 3. Update Preview Gambar Hasil
+            // 3. Tampilkan ke Preview
             resultPreview.src = canvas.toDataURL('image/jpeg', 0.92);
         }
 

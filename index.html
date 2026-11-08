@@ -66,14 +66,14 @@
                 <video id="video-player" controls class="max-h-[380px] rounded-lg w-auto object-contain"></video>
             </div>
 
-            <!-- Download Buttons (Direct Link ke Halaan Download TikWM yang aman untuk iOS) -->
+            <!-- Download Buttons -->
             <div class="flex flex-col gap-2 pt-2">
-                <a id="btn-download-video" href="#" target="_blank" rel="noopener" class="w-full py-3 text-center bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl text-sm transition shadow-md active:scale-[0.98] block">
+                <button id="btn-download-video" class="w-full py-3 text-center bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl text-sm transition shadow-md active:scale-[0.98]">
                     ⬇️ Unduh Video (No Watermark)
-                </a>
-                <a id="btn-download-audio" href="#" target="_blank" rel="noopener" class="w-full py-3 text-center bg-gray-800 hover:bg-gray-700 text-cyan-300 font-semibold rounded-xl text-sm border border-gray-700 transition active:scale-[0.98] block">
+                </button>
+                <button id="btn-download-audio" class="w-full py-3 text-center bg-gray-800 hover:bg-gray-700 text-cyan-300 font-semibold rounded-xl text-sm border border-gray-700 transition active:scale-[0.98]">
                     🎵 Unduh Audio / MP3 Saja
-                </a>
+                </button>
             </div>
         </section>
 
@@ -109,6 +109,9 @@
             const btnDownloadVideo = document.getElementById('btn-download-video');
             const btnDownloadAudio = document.getElementById('btn-download-audio');
 
+            let directVideoUrl = '';
+            let directAudioUrl = '';
+
             btnFetch.addEventListener('click', async () => {
                 const url = tiktokUrlInput.value.trim();
                 if (!url) {
@@ -134,10 +137,8 @@
                         videoTitle.innerText = videoData.title || 'Video TikTok';
                         
                         videoPlayer.src = videoData.play;
-                        
-                        // Mengarahkan tombol ke link unduh langsung server penyedia
-                        btnDownloadVideo.href = videoData.play;
-                        btnDownloadAudio.href = videoData.music;
+                        directVideoUrl = videoData.play;
+                        directAudioUrl = videoData.music;
 
                         resultSection.classList.remove('hidden');
                     } else {
@@ -148,6 +149,52 @@
                     loadingState.classList.add('hidden');
                     alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
                 }
+            });
+
+            // Metode Blob Fetching dengan Indikator Loading pada Tombol
+            async function downloadWithBlob(fileUrl, filename, buttonElement) {
+                if (!fileUrl) return;
+
+                const originalText = buttonElement.innerText;
+                buttonElement.innerText = "⏳ Sedang Mengunduh...";
+                buttonElement.disabled = true;
+
+                try {
+                    // Tarik data mentah file video ke memori browser terlebih dahulu
+                    const response = await fetch(fileUrl);
+                    const blob = await response.blob();
+                    
+                    // Buat objek URL sementara dari blob
+                    const blobUrl = URL.createObjectURL(blob);
+                    
+                    // Buat elemen link samaran untuk memicu unduhan lokal
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    
+                    // Bersihkan memori blob setelah diunduh
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+                } catch (error) {
+                    console.error("Blob download error:", error);
+                    // Fallback jika diblokir aturan jaringan ketat
+                    window.open(fileUrl, '_blank');
+                } finally {
+                    buttonElement.innerText = originalText;
+                    buttonElement.disabled = false;
+                }
+            }
+
+            btnDownloadVideo.addEventListener('click', (e) => {
+                e.preventDefault();
+                downloadWithBlob(directVideoUrl, 'TikTok_NoWatermark.mp4', btnDownloadVideo);
+            });
+
+            btnDownloadAudio.addEventListener('click', (e) => {
+                e.preventDefault();
+                downloadWithBlob(directAudioUrl, 'TikTok_Audio.mp3', btnDownloadAudio);
             });
         });
     </script>

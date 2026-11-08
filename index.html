@@ -41,7 +41,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                     <p class="font-semibold text-white">Pilih Foto Kamu</p>
-                    <p class="text-xs text-gray-400">Format PNG/JPG (Langsung tampil & sesuaikan warna)</p>
+                    <p class="text-xs text-gray-400">Format PNG/JPG (Pilih foto baru untuk mulai)</p>
                 </div>
             </div>
         </section>
@@ -49,14 +49,14 @@
         <!-- Preview & Editor Section -->
         <section id="editor-section" class="bg-[#1e1e1e] p-5 rounded-2xl border border-gray-800 shadow-xl flex flex-col gap-5 hidden">
             
-            <!-- Canvas Proses (Disembunyikan karena kita tampilkan hasil preview gambarnya langsung) -->
+            <!-- Canvas Tersembunyi untuk Proses Pemrosesan -->
             <canvas id="photo-canvas" class="hidden"></canvas>
 
-            <!-- Preview Hasil Jadi (Image Tag) -->
+            <!-- Pratinjau Hasil Jadi (Wajib Muncul) -->
             <div class="flex flex-col items-center gap-2">
-                <label class="block text-xs font-semibold uppercase text-gray-400 tracking-wider w-full text-left">Pratinjau Hasil Akhir</label>
-                <div class="bg-[#171717] p-3 rounded-xl border border-gray-800 w-full flex justify-center">
-                    <img id="result-preview" class="max-h-[320px] rounded shadow-md border border-gray-700 object-contain" alt="Preview Pas Foto">
+                <label class="block text-xs font-semibold uppercase text-indigo-400 tracking-wider w-full text-left">📸 Pratinjau Hasil Akhir</label>
+                <div class="bg-[#171717] p-3 rounded-xl border border-gray-700 w-full flex justify-center shadow-inner">
+                    <img id="result-preview" class="max-h-[360px] w-auto rounded shadow-md border border-gray-600 object-contain aspect-[3/4]" alt="Preview Hasil">
                 </div>
             </div>
 
@@ -143,11 +143,11 @@
         function renderCanvasAndPreview() {
             if (!userImage) return;
 
-            // 1. Gambar latar belakang pada canvas
+            // 1. Isi warna background
             ctx.fillStyle = currentBgColor;
             ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-            // 2. Gambar foto secara proporsional
+            // 2. Gambar foto secara proporsional di canvas
             const scale = Math.min(CANVAS_WIDTH / userImage.width, CANVAS_HEIGHT / userImage.height);
             const w = userImage.width * scale;
             const h = userImage.height * scale;
@@ -156,7 +156,7 @@
 
             ctx.drawImage(userImage, x, y, w, h);
 
-            // 3. Tampilkan hasil canvas langsung ke elemen tag <img> (Preview)
+            // 3. Masukkan hasil render ke tag img preview
             resultPreview.src = canvas.toDataURL('image/jpeg', 0.92);
         }
 

@@ -3,64 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PasFotoKilat - Pas Foto Instan & Estetik</title>
-    <!-- Tailwind CSS CDN -->
+    <title>PasFotoKilat - AI Pas Foto Instan</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google MediaPipe Selfie Segmentation CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
     <!-- Font Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #121212;
-            color: #E0E0E0;
+        body { font-family: 'Inter', sans-serif; background-color: #121212; color: #E0E0E0; }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            width: 40px; height: 40px; border-radius: 50%;
+            border-left-color: #6366F1; animation: spin 0.8s linear infinite;
         }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-    <!-- Header Section -->
+    <!-- Header -->
     <header class="border-b border-gray-800 bg-[#1e1e1e] sticky top-0 z-50">
         <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <div class="bg-indigo-600 text-white font-bold px-2.5 py-1 rounded-lg text-lg">⚡</div>
                 <h1 class="text-xl font-bold tracking-tight text-white">PasFoto<span class="text-indigo-400">Kilat</span></h1>
             </div>
-            <span class="text-xs bg-indigo-950 text-indigo-300 font-medium px-2.5 py-1 rounded-full border border-indigo-800/50">100% Cepat & Stabil</span>
+            <span class="text-xs bg-indigo-950 text-indigo-300 font-medium px-2.5 py-1 rounded-full border border-indigo-800/50">AI Client-Side</span>
         </div>
     </header>
 
-    <!-- Main Content Container -->
+    <!-- Main Content -->
     <main class="max-w-md mx-auto w-full px-4 py-6 flex-grow flex flex-col gap-6">
 
-        <!-- Upload Section -->
+        <!-- Upload Box -->
         <section class="bg-[#1e1e1e] p-5 rounded-2xl border border-gray-800 text-center shadow-xl">
-            <div id="upload-box" class="border-2 border-dashed border-gray-700 hover:border-indigo-500 transition-colors rounded-xl p-6 cursor-pointer bg-[#171717] relative">
+            <div id="upload-box" class="border-2 border-dashed border-gray-700 hover:border-indigo-500 transition-colors rounded-xl p-6 cursor-pointer bg-[#171717]">
                 <input type="file" id="image-input" accept="image/*" class="hidden">
                 <div class="flex flex-col items-center gap-2">
                     <svg class="w-10 h-10 text-indigo-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                     <p class="font-semibold text-white">Pilih Foto Kamu</p>
-                    <p class="text-xs text-gray-400">Format PNG/JPG (Pilih foto baru untuk mulai)</p>
+                    <p class="text-xs text-gray-400">AI Google akan menghapus background secara otomatis</p>
                 </div>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="loading-state" class="hidden flex flex-col items-center justify-center py-6 gap-3">
+                <div class="spinner"></div>
+                <p class="text-sm font-medium text-indigo-400 animate-pulse">AI Google Sedang Memotong Latar...</p>
             </div>
         </section>
 
-        <!-- Preview & Editor Section -->
+        <!-- Editor & Preview Section -->
         <section id="editor-section" class="bg-[#1e1e1e] p-5 rounded-2xl border border-gray-800 shadow-xl flex flex-col gap-5 hidden">
             
-            <!-- Canvas Tersembunyi untuk Proses Pemrosesan -->
             <canvas id="photo-canvas" class="hidden"></canvas>
 
-            <!-- Pratinjau Hasil Jadi (Wajib Muncul) -->
+            <!-- Preview Hasil -->
             <div class="flex flex-col items-center gap-2">
-                <label class="block text-xs font-semibold uppercase text-indigo-400 tracking-wider w-full text-left">📸 Pratinjau Hasil Akhir</label>
-                <div class="bg-[#171717] p-3 rounded-xl border border-gray-700 w-full flex justify-center shadow-inner">
-                    <img id="result-preview" class="max-h-[360px] w-auto rounded shadow-md border border-gray-600 object-contain aspect-[3/4]" alt="Preview Hasil">
+                <label class="block text-xs font-semibold uppercase text-indigo-400 tracking-wider w-full text-left">📸 Pratinjau Hasil Pas Foto</label>
+                <div class="bg-[#171717] p-3 rounded-xl border border-gray-700 w-full flex justify-center">
+                    <img id="result-preview" class="max-h-[340px] w-auto rounded shadow-md border border-gray-600 object-contain aspect-[3/4]" alt="Preview Hasil">
                 </div>
             </div>
 
-            <!-- Controls: Warna Formal -->
+            <!-- Pilih Warna Latar -->
             <div>
                 <label class="block text-xs font-semibold uppercase text-gray-400 tracking-wider mb-2">Pilih Warna Latar Belakang</label>
                 <div class="grid grid-cols-4 gap-2">
@@ -71,21 +81,21 @@
                 </div>
             </div>
 
-            <!-- Download Options -->
+            <!-- Download Button -->
             <div class="pt-2 border-t border-gray-800 flex flex-col gap-2">
-                <label class="block text-xs font-semibold uppercase text-gray-400 tracking-wider">Opsi Unduh Foto</label>
+                <label class="block text-xs font-semibold uppercase text-gray-400 tracking-wider">Unduh Foto</label>
                 <button onclick="downloadImage('standard')" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-sm transition shadow-lg shadow-indigo-900/30 active:scale-[0.98]">
-                    Unduh Kualitas Standar (HD)
+                    Unduh Kualitas HD
                 </button>
                 <button onclick="downloadImage('target200kb')" class="w-full py-3 bg-gray-800 hover:bg-gray-700 text-indigo-300 font-semibold rounded-xl text-sm border border-indigo-900/50 transition active:scale-[0.98]">
-                    Unduh Pas ≤ 200 KB (Syarat CPNS/Kuliah)
+                    Unduh Pas ≤ 200 KB (CPNS/Kuliah)
                 </button>
             </div>
         </section>
 
-        <!-- Donation Placeholder -->
+        <!-- Donation -->
         <section class="bg-[#1e1e1e] p-4 rounded-xl border border-gray-800/80 text-center flex flex-col gap-2">
-            <p class="text-xs text-gray-400">Website ini gratis & tanpa iklan mengganggu!</p>
+            <p class="text-xs text-gray-400">Website ini gratis & tanpa iklan!</p>
             <div class="flex justify-center items-center gap-2">
                 <a href="https://trakteer.id" target="_blank" rel="noopener" class="text-xs text-indigo-400 hover:underline font-medium">Trakteer ☕</a>
                 <span class="text-gray-600">•</span>
@@ -94,27 +104,42 @@
         </section>
     </main>
 
-    <!-- Footer -->
     <footer class="py-4 text-center text-xs text-gray-600 border-t border-gray-800">
-        &copy; 2026 PasFotoKilat. Aman & Cepat di Perangkat Pengguna.
+        &copy; 2026 PasFotoKilat. Pemrosesan AI 100% di perangkat.
     </footer>
 
-    <!-- Logic Script -->
     <script>
         const imageInput = document.getElementById('image-input');
         const uploadBox = document.getElementById('upload-box');
+        const loadingState = document.getElementById('loading-state');
         const editorSection = document.getElementById('editor-section');
         const canvas = document.getElementById('photo-canvas');
         const ctx = canvas.getContext('2d');
         const resultPreview = document.getElementById('result-preview');
 
-        let userImage = null;
-        let currentBgColor = '#FF0000'; // Default Merah
+        let rawImage = null;
+        let segmentationMask = null;
+        let currentBgColor = '#FF0000';
 
         const CANVAS_WIDTH = 600;
         const CANVAS_HEIGHT = 800;
         canvas.width = CANVAS_WIDTH;
         canvas.height = CANVAS_HEIGHT;
+
+        // Inisialisasi Google MediaPipe Selfie Segmentation AI
+        const selfieSegmentation = new SelfieSegmentation({
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
+        });
+
+        selfieSegmentation.setOptions({ modelSelection: 1 }); // Model General (Akurat & Ringan)
+
+        selfieSegmentation.onResults((results) => {
+            segmentationMask = results.segmentationMask;
+            loadingState.classList.add('hidden');
+            uploadBox.classList.remove('hidden');
+            editorSection.classList.remove('hidden');
+            renderPasFoto();
+        });
 
         uploadBox.addEventListener('click', () => imageInput.click());
 
@@ -122,47 +147,57 @@
             const file = e.target.files[0];
             if (!file) return;
 
+            uploadBox.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+
             const reader = new FileReader();
             reader.onload = function(event) {
                 const img = new Image();
-                img.onload = function() {
-                    userImage = img;
-                    editorSection.classList.remove('hidden');
-                    renderCanvasAndPreview();
-                }
+                img.onload = async function() {
+                    rawImage = img;
+                    // Kirim gambar ke AI Google untuk diproses
+                    await selfieSegmentation.send({ image: rawImage });
+                };
                 img.src = event.target.result;
-            }
+            };
             reader.readAsDataURL(file);
         });
 
         function setBackground(color) {
             currentBgColor = color;
-            renderCanvasAndPreview();
+            renderPasFoto();
         }
 
-        function renderCanvasAndPreview() {
-            if (!userImage) return;
+        function renderPasFoto() {
+            if (!rawImage || !segmentationMask) return;
 
-            // 1. Isi warna background
+            ctx.save();
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            // 1. Gambar Latar Warna Pilihan
             ctx.fillStyle = currentBgColor;
             ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-            // 2. Gambar foto secara proporsional di canvas
-            const scale = Math.min(CANVAS_WIDTH / userImage.width, CANVAS_HEIGHT / userImage.height);
-            const w = userImage.width * scale;
-            const h = userImage.height * scale;
+            // Hitung Skala & Posisi Subjek Manusia agar 3:4 Proposional
+            const scale = Math.min(CANVAS_WIDTH / rawImage.width, CANVAS_HEIGHT / rawImage.height);
+            const w = rawImage.width * scale;
+            const h = rawImage.height * scale;
             const x = (CANVAS_WIDTH / 2) - (w / 2);
             const y = CANVAS_HEIGHT - h;
 
-            ctx.drawImage(userImage, x, y, w, h);
+            // 2. Terapkan Masking AI (Hapus Background)
+            ctx.drawImage(segmentationMask, x, y, w, h);
+            ctx.globalCompositeOperation = 'source-in';
+            ctx.drawImage(rawImage, x, y, w, h);
 
-            // 3. Masukkan hasil render ke tag img preview
+            ctx.restore();
+
+            // 3. Update Preview Gambar Hasil
             resultPreview.src = canvas.toDataURL('image/jpeg', 0.92);
         }
 
         function downloadImage(mode) {
             let quality = 0.92;
-            
             if (mode === 'target200kb') {
                 let dataUrl = canvas.toDataURL('image/jpeg', quality);
                 let sizeInBytes = Math.round((dataUrl.length - 'data:image/jpeg;base64,'.length) * 3 / 4);
@@ -172,33 +207,29 @@
                     dataUrl = canvas.toDataURL('image/jpeg', quality);
                     sizeInBytes = Math.round((dataUrl.length - 'data:image/jpeg;base64,'.length) * 3 / 4);
                 }
-                canvasToBlobAndDownload(dataUrl, 'PasFoto_200KB_PasFotoKilat.jpg');
+                triggerBlobDownload(dataUrl, 'PasFoto_200KB_PasFotoKilat.jpg');
             } else {
                 const dataUrl = canvas.toDataURL('image/jpeg', quality);
-                canvasToBlobAndDownload(dataUrl, 'PasFoto_HD_PasFotoKilat.jpg');
+                triggerBlobDownload(dataUrl, 'PasFoto_HD_PasFotoKilat.jpg');
             }
         }
 
-        function canvasToBlobAndDownload(dataUrl, filename) {
+        function triggerBlobDownload(dataUrl, filename) {
             const arr = dataUrl.split(',');
             const mime = arr[0].match(/:(.*?);/)[1];
             const bstr = atob(arr[1]);
             let n = bstr.length;
             const u8arr = new Uint8Array(n);
-            while (n--) {
-                u8arr[n] = bstr.charCodeAt(n);
-            }
+            while (n--) { u8arr[n] = bstr.charCodeAt(n); }
             const blob = new Blob([u8arr], { type: mime });
             
             const blobUrl = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = blobUrl;
             a.download = filename;
-            
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            
             setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
         }
     </script>
